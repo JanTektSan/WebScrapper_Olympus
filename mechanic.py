@@ -9,7 +9,15 @@ for li_element in li_elements:
     a_tag = li_element.select("a")[0]
     if a_tag:
         href = a_tag["href"]
-        print(href)
+        # print(href)
+        sub_page = browser.get(href)
+        detailDiv = sub_page.soup.select("ul.detailDiv")[0]
+        
+        ul_elements = detailDiv.select("li")[0].select("ul")
+
+        for ul_element in ul_elements:
+            print(f"{ul_element.select("li")[0].text} =======> {ul_element.select("li")[1].text}")
+
 
 # url = "http://olympus.realpython.org/login"
 # login_page = browser.get(url)
