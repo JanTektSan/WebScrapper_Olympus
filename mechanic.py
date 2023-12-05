@@ -11,6 +11,10 @@ for li_element in li_elements:
         href = a_tag["href"]
         # print(href)
         sub_page = browser.get(href)
+        ol = sub_page.soup.select("ol.breadcrumb")[0]
+        sheet_name = ol.select("li")[-1].text
+        print(f"{sheet_name}")
+
         detailDiv = sub_page.soup.select("ul.detailDiv")[0]
         
         ul_elements = detailDiv.select("li")[0].select("ul")
