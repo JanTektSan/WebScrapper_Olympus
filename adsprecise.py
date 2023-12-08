@@ -30,9 +30,9 @@ colors = [(1, 0.8, 0.7), (0.2, 1, 0.9), (0.3, 0.8, 1)]
 
 browser = mechanicalsoup.Browser()
 baseUrl = "https://adsprecise.com/listings/"
-page = browser.get(baseUrl)
+basePage = browser.get(baseUrl)
 
-nav_element = page.soup.select(".fusion-tabs-1 > .nav")[0]
+nav_element = basePage.soup.select(".fusion-tabs-1 > .nav")[0]
 
 tab_links = nav_element.select("a.tab-link")
 
@@ -42,7 +42,7 @@ for tab_link in tab_links:
 
     worksheet = spreadsheet.add_worksheet(tab_link.text, rows="1000", cols="26")
 
-    li_elements = page.soup.select(".tab-content .tab-pane.active .es-listing > .properties")
+    li_elements = page.soup.select(f"{tab_link["href"]} .es-listing > .properties")
 
     for li_element in li_elements:
         a_tag = li_element.select(".es-read-wrap a")[0]
@@ -97,7 +97,7 @@ for tab_link in tab_links:
             current_row = end_row + 1
 
     while True:
-        pagination_lies = page.soup.select("nav.pagination ul.page-numbers li")
+        pagination_lies = page.soup.select(f"{tab_link["href"]} nav.pagination ul.page-numbers li")
         if len(pagination_lies) == 0:
             break
         next_a_elements = pagination_lies[-1].select("a")
@@ -107,7 +107,7 @@ for tab_link in tab_links:
         time.sleep(30)
         url = next_a_elements[0]["href"]
         page = browser.get(url)
-        li_elements = page.soup.select(".tab-content .tab-pane.active .es-listing .es_category-colorado")
+        li_elements = page.soup.select(f"{tab_link["href"]} .es-listing > .properties")
 
         print("length:",  len(li_elements))
 
@@ -163,8 +163,6 @@ for tab_link in tab_links:
                 # Update current_row for the next property
                 current_row = end_row + 1
 
-
-print("length:",  len(li_elements))
 
 
 print("Data entry complete.")
