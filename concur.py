@@ -39,14 +39,14 @@ creds = ServiceAccountCredentials.from_json_keyfile_name("creds.json", scopes)
 client = gspread.authorize(creds)
 
 # Open the spreadsheet and clear existing worksheets
-spreadsheet = client.open('ctc spreadsheet')
+spreadsheet = client.open('Multima spreadsheet')
 worksheets = spreadsheet.worksheets()
 reqs = [{"repeatCell": {"range": {"sheetId": s.id}, "fields": "*"}} if i == 0 else {"deleteSheet": {"sheetId": s.id}} for i, s in enumerate(worksheets)]
 spreadsheet.batch_update({"requests": reqs})
 print(f"all worksheets removed and first sheet cleared")
 
 # Use ThreadPoolExecutor to process li_elements concurrently
-with ThreadPoolExecutor(max_workers=5) as executor:
+with ThreadPoolExecutor(max_workers=3) as executor:
     # Submit tasks to the executor
     futures = [executor.submit(process_li_element, li) for li in li_elements]
 
