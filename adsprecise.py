@@ -1,6 +1,7 @@
 import mechanicalsoup
 import gspread
 from oauth2client.service_account import ServiceAccountCredentials
+import time
 
 scopes = ['https://www.googleapis.com/auth/spreadsheets',
           'https://www.googleapis.com/auth/drive']
@@ -23,6 +24,7 @@ worksheet.clear()
 worksheet.unmerge_cells(1, 1, worksheet.row_count, 1)
 
 current_row = 1
+index = 0
 
 colors = [(1, 0.8, 0.7), (0.2, 1, 0.9), (0.3, 0.8, 1)]
 
@@ -33,7 +35,7 @@ li_elements = page.soup.select(".tab-content .tab-pane.active .es-listing .es_ca
 
 print("length:",  len(li_elements))
 
-for index, li_element in enumerate(li_elements):
+for li_element in li_elements:
     a_tag = li_element.select(".es-read-wrap a")[0]
     if a_tag:
         href = a_tag["href"]
@@ -72,6 +74,7 @@ for index, li_element in enumerate(li_elements):
 
         # Apply background color to the range of the current li_element
         color = colors[index % len(colors)]  # Alternate between colors defined
+        index = index + 1
         worksheet.format(f'A{current_row}:Z{end_row}', {
             "backgroundColor": {
                 "red": color[0],
@@ -85,15 +88,16 @@ for index, li_element in enumerate(li_elements):
         current_row = end_row + 1
 
 while True:
-    next_a_element = page.soup.select("nav.pagination ul.page-numbers li")[-1].select("a")
+    next_a_element = page.soup.select("nav.pagination ul.page-numbers li")[-1].select("a")[0]
     if next_a_element:
+        time.sleep(30)
         url = next_a_element["href"]
         page = browser.get(url)
         li_elements = page.soup.select(".tab-content .tab-pane.active .es-listing .es_category-colorado")
 
         print("length:",  len(li_elements))
 
-        for index, li_element in enumerate(li_elements):
+        for li_element in li_elements:
             a_tag = li_element.select(".es-read-wrap a")[0]
             if a_tag:
                 href = a_tag["href"]
@@ -132,6 +136,7 @@ while True:
 
                 # Apply background color to the range of the current li_element
                 color = colors[index % len(colors)]  # Alternate between colors defined
+                index = index + 1
                 worksheet.format(f'A{current_row}:Z{end_row}', {
                     "backgroundColor": {
                         "red": color[0],
@@ -143,6 +148,7 @@ while True:
 
                 # Update current_row for the next property
                 current_row = end_row + 1
-
+    else:
+        break
 
 print("Data entry complete.")
